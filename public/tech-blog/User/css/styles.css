@@ -1,0 +1,94 @@
+/* Index Start */
+
+body {
+    background-color: #f8f9fa;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+}
+
+.navbar {
+    background-color: #ffffff;
+    border-bottom: 1px solid #e0e0e0;
+    padding: 1rem 0;
+}
+
+.hero-section {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    color: white;
+    padding: 5rem 0;
+    margin-bottom: 3rem;
+    border-radius: 1rem;
+}
+
+.card {
+    border: none;
+    border-radius: 12px;
+    overflow: hidden;
+    transition: all 0.3s ease;
+}
+
+.card:hover {
+    transform: translateY(-10px);
+    box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1) !important;
+}
+
+.card-img-top {
+    height: 200px;
+    object-fit: cover;
+}
+
+.category-badge {
+    font-size: 0.75rem;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    font-weight: bold;
+}
+
+.sidebar-card {
+    border: none;
+    border-radius: 12px;
+    background-color: #fff;
+}
+
+footer {
+    background-color: #212529;
+    color: #adb5bd;
+    padding: 3rem 0;
+}
+
+/* Index End */
+/* Login Start */
+.login-card {
+    max-width: 400px;
+    width: 100%;
+    margin: auto;
+    border: none;
+    border-radius: 15px;
+}
+
+/* Login End */
+/* Register Start */
+.register-card {
+    max-width: 450px;
+    width: 100%;
+    margin: auto;
+    border: none;
+    border-radius: 20px;
+}
+
+/* Register End */
+/* Post Detail Start */
+.content {
+    font-size: 1.1rem;
+    color: #333;
+    text-align: justify;
+    font-size: 1.1rem;
+    line-height: 1.8;
+}
+
+.comment-box {
+    background: #f8f9fa;
+    border-radius: 10px;
+    padding: 20px;
+}
+
+/* Post Detail End */
