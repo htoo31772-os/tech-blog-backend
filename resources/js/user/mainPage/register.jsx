@@ -1,77 +1,13 @@
-
-import axios from "axios";
-import react, { useState } from "react";
-import toast from "react-hot-toast";
-import { Link, useNavigate } from "react-router-dom";
-
-const Register = ({setUser}) => {
-    const navigate = useNavigate();
-    const [validationError, SetValidationError] = useState({})
-    const [formData, setFormData] = useState({
-        name: '',
-        email: '',
-        password: '',
-        password_confirmation: ''
-    })
-    const handleChange = (e) => {
-        const { name, value } = e.target;
-        setFormData(
-            prevState => ({
-                ...prevState,
-                [name]: value
-            })
-        )
-        if (validationError[name]) {
-            SetValidationError(
-                prevErrors => ({
-                    ...prevErrors,
-                    [name]: null
-                })
-            )
-        }
-    }
-    const handleRegisterSubmit = async (e) => {
-        e.preventDefault();
-        const newErrors = {}
-        if (!formData.name) {
-            newErrors.name = 'Name field is required';
-        }
-        if (!formData.email) {
-            newErrors.email = 'Email field is required';
-        } else if (!/\S+@\S+\.\S+/.test(formData.email)) {
-            newErrors.email = 'Email address is invalid';
-        }
-        if (!formData.password) {
-            newErrors.password = 'Password field is required';
-        }
-        if (!formData.password_confirmation) {
-            newErrors.password_confirmation = 'Password confirmation is required';
-        } else if (formData.password !== formData.password_confirmation) {
-            newErrors.password_confirmation = 'Password confirmaiton must be same password';
-        }
-        SetValidationError(newErrors);
-        if (Object.keys(newErrors).length === 0) {
-            try {
-                const response = await axios.post('/api/register', formData)
-                if (response.data.access_token) {
-                    const token = localStorage.setItem('token', response.data.access_token);
-                    const role = localStorage.setItem('role', response.data.user.role);
-                    localStorage.setItem('user',JSON.stringify(response.data.user));
-                    setUser(response.data.user);
-                }
-                navigate('/')
-                toast.success('Registration အောင်မြင်ပါသည်', { duration: 4000 });
-            } catch (err) {
-                if (err.response.status === 422) {
-                    SetValidationError(err.response.data.errors)
-                } else if (err.response && err.response.data && err.response.data.message) {
-                    toast.error(err.response.data.message, { duration: 4000 });
-                } else {
-                    toast.error('Registration မအောင်မြင်ပါ။ ထပ်မံကြိုးစားကြည့်ပါ။', { duration: 4000 })
-                }
-            }
-        }
-    }
+import { Link } from "react-router-dom";
+import useRegister from "../../hooks/useRegister";
+const Register = () => {
+    const {
+        formData,
+        validationError,
+        isLoading,
+        handleChange,
+        handleRegisterSubmit
+    } = useRegister();
     return (
         <div className="card register-card shadow-lg p-4 mt-5" style={{ width: '100%', maxWidth: '450px' }}>
             <h3 className="text-center fw-bold text-primary mb-2">Create Account</h3>
@@ -79,7 +15,7 @@ const Register = ({setUser}) => {
             <form onSubmit={handleRegisterSubmit}>
                 {/* Name */}
                 <div className="mb-3">
-                    <label className="form-label fw-semibold">Full Name</label>
+                    <label htmlFor="name" className="form-label fw-semibold">Full Name</label>
                     <input type="text"
                         className={`form-control ${validationError.name ? 'is-invalid' : ''}`}
                         name="name"
@@ -88,11 +24,11 @@ const Register = ({setUser}) => {
                         placeholder="Name"
                     />
                     {/* Error Message */}
-                    {validationError.name && (<div className="text-danger">{validationError.name}</div>)}
+                    {validationError.name && (<div className="invalid-feedback">{validationError.name}</div>)}
                 </div>
                 {/* Email */}
                 <div className="mb-3">
-                    <label className="form-label fw-semibold">Email Address</label>
+                    <label htmlFor="email" className="form-label fw-semibold">Email Address</label>
                     <input type="email"
                         className={`form-control ${validationError.email ? 'is-invalid' : ''}`}
                         name="email"
@@ -101,22 +37,22 @@ const Register = ({setUser}) => {
                         placeholder="example@gmail.com"
                     />
                     {/* Error Message */}
-                    {validationError.email && (<div className="text-danger">{validationError.email}</div>)}
+                    {validationError.email && (<div className="invalid-feedback">{validationError.email}</div>)}
                 </div>
                 <div className="mb-3">
-                    <label className="form-label fw-semibold">Password</label>
+                    <label htmlFor="password" className="form-label fw-semibold">Enter Password</label>
                     <input type="password"
                         className={`form-control ${validationError.password ? 'is-invalid' : ''}`}
                         name="password"
                         value={formData.password}
                         onChange={handleChange}
-                        placeholder="Confirm password"
+                        placeholder="Enter password"
                     />
                     {/* Error Message */}
-                    {validationError.password && (<div className="text-danger">{validationError.password}</div>)}
+                    {validationError.password && (<div className="invalid-feedback">{validationError.password}</div>)}
                 </div>
                 <div className="mb-4">
-                    <label className="form-label fw-semibold">Confirm Password</label>
+                    <label htmlFor="password_confirmation" className="form-label fw-semibold">Confirm Password</label>
                     <input type="password"
                         className={`form-control ${validationError.password_confirmation ? 'is-invalid' : ''}`}
                         name="password_confirmation"
@@ -125,10 +61,19 @@ const Register = ({setUser}) => {
                         placeholder="Repeat your password"
                     />
                     {/* Error Message */}
-                    {validationError.password_confirmation && (<div className="text-danger">{validationError.password_confirmation}</div>)}
+                    {validationError.password_confirmation && (<div className="invalid-feedback">{validationError.password_confirmation}</div>)}
                 </div>
                 {/* Sing Up Button */}
-                <button type="submit" className="btn btn-primary w-100 py-2 rounded-pill fw-bold">Sign Up</button>
+                <button type="submit" className="btn btn-primary w-100 py-2 rounded-pill fw-bold" disabled={isLoading}>
+                    {isLoading ? (
+                        <span>
+                            <span className="spinner-border spinner-border-sm me-2"></span>
+                            Registration...
+                        </span>
+                    ) : (
+                        'Sign Up'
+                    )}
+                </button>
                 {/* Link to login */}
                 <p className="text-center mt-3 small">
                     Already have an account? <Link to="/login" className="text-decoration-none">Login</Link>

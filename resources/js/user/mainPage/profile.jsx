@@ -1,8 +1,10 @@
 import axios from "axios";
-import React, { useEffect, useState } from "react";
+import React, { useContext, useEffect, useState } from "react";
 import toast from "react-hot-toast";
+import { AuthContext } from "../../context/authContext";
 
-const Profile = ({ user, setUser }) => {
+const Profile = () => {
+    const{user,setUser}=useContext(AuthContext);
     const [name, setName] = useState("");
     const [bio, setBio] = useState("");
     const [email, setEmail] = useState("");

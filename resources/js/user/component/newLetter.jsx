@@ -1,16 +1,17 @@
-import react, { useEffect, useState } from "react";
+import react, { useContext, useEffect, useState } from "react";
 import toast from "react-hot-toast";
 import axios from "axios";
-const NewLetter = ({ isLoggin }) => {
-    const token = localStorage.getItem('token');
+import { AuthContext } from "../../context/authContext";
+const NewLetter = () => {
+    const{isAuthenticated}=useContext(AuthContext);
     const [email, setEmail] = useState("");
     const handleSubscribe = async (e) => {
         e.preventDefault();
-        if (!isLoggin && !email) {
+        if (!isAuthenticated && !email) {
             toast.error("Email လိပ်စာထည့်ပေးပါ။", { duration: 4000 });
         }
         try {
-            const res = await axios.post('/api/newLetter', { email: isLoggin ? null : email }, {
+            const res = await axios.post('/api/newLetter', { email: isAuthenticated ? null : email }, {
                 headers: {
                     'Authorization': `Bearer ${token}`
                 }
@@ -19,7 +20,7 @@ const NewLetter = ({ isLoggin }) => {
             toast.success("Newsletter စာရင်းသွင်းပြီးပါပြီ။", { duration: 4000 })
         } catch (err) {
             console.error("newLetter error:", err);
-            toast.error(err.response.data.message || "တစ်ခုခုမှားယွင်းနေပါသည်။", { duration: 4000 })
+            toast.error(err.response?.data?.message || "တစ်ခုခုမှားယွင်းနေပါသည်။", { duration: 4000 })
         }
     }
     return (
@@ -29,7 +30,7 @@ const NewLetter = ({ isLoggin }) => {
             <div>
                 <p className="small opacity-75">Get the latest articles delivered to your inbox.</p>
                 <form onSubmit={handleSubscribe}>
-                    {isLoggin ? (
+                    {isAuthenticated ? (
                         // Login ဝင်ထားရင် စာသားပဲပြမယ်
                         <p className="small opacity-75">
                             သင်သည် Login ဝင်ထားသည့်အတွက် ခလုတ်နှိပ်ရုံဖြင့် စာရင်းသွင်းနိုင်ပါသည်။
@@ -46,7 +47,7 @@ const NewLetter = ({ isLoggin }) => {
                     )}
 
                     <button type="submit" className="btn btn-light w-100 fw-bold rounded-pill text-primary">
-                        {isLoggin ? "Subscribe Now" : "Subscribe"}
+                        {isAuthenticated ? "Subscribe Now" : "Subscribe"}
                     </button>
                 </form>
             </div>

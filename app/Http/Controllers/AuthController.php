@@ -6,7 +6,6 @@ use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
-use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\Validator;
 
@@ -21,19 +20,29 @@ class AuthController extends Controller
             'password' => 'required|string|min:8|confirmed',
         ]);
         if ($validator->fails()) {
-            return $this->validationError($validator);
+            return response()->json([
+                'status' => 'error',
+                'message' => 'Validation failed',
+                'errors' => $validator->errors()->toArray(),
+            ], 422);
         }
+        $validated = $validator->validated();
         $user = User::create([
-            'name' => $request->name,
-            'email' => $request->email,
-            'password' => Hash::make($request->password)
+            'name' => $validated['name'],
+            'email' => $validated['email'],
+            'password' => Hash::make($validated['password'])
         ]);
         Auth::login($user);
         $token = $user->createToken('auth_token')->plainTextToken;
         return response()->json([
             'status' => 'success',
             'message' => 'Registration successful',
-            'user' => $user,
+            'user' => [
+                'id' => $user->id,
+                'name' => $user->name,
+                'email' => $user->email,
+                'role' => $user->role,
+            ],
             'access_token' => $token
         ], 200);
     }
@@ -45,13 +54,18 @@ class AuthController extends Controller
             'password' => 'required|string|min:8'
         ]);
         if ($validator->fails()) {
-            return $this->validationError($validator);
-        }
-        $user = User::where('email', $request->email)->first();
-        if (!$user || !Hash::check($request->password, $user->password)) {
             return response()->json([
                 'status' => 'error',
-                'message' => 'Login failed. Email or password incorrect.'
+                'message' => 'Validation failed',
+                'errors' => $validator->errors()->toArray(),
+            ], 422);
+        }
+        $validated = $validator->validated();
+        $user = User::where('email', $validated['email'])->first();
+        if (!$user || !Hash::check($validated['password'], $user->password)) {
+            return response()->json([
+                'status' => 'error',
+                'message' => 'Email or password incorrect.'
             ], 401);
         }
         $token = $user->createToken('auth_token')->plainTextToken;
@@ -60,7 +74,12 @@ class AuthController extends Controller
             'status' => 'success',
             'message' => 'Login successful',
             'access_token' => $token,
-            'user' => $user
+            'user' =>  [
+                'id' => $user->id,
+                'name' => $user->name,
+                'email' => $user->email,
+                'role' => $user->role,
+            ]
         ], 200);
     }
     // Update Profile
@@ -123,13 +142,15 @@ class AuthController extends Controller
     {
         $errors = $validator->errors()->getMessages();
         $errorMessage = [];
-        foreach ($errors as $error => $message) {
-            $errorMessage[$error] = $message[0];
+
+        foreach ($errors as $field => $messages) {
+            $errorMessage[$field] = $messages[0];
         }
+
         return response()->json([
             'status' => 'error',
             'message' => 'Validation failed',
-            'errors' => $errorMessage
+            'errors' => $errorMessage,
         ], 422);
     }
 }

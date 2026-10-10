@@ -1,27 +1,32 @@
-import axios from "axios";
-import react from "react";
 import toast from "react-hot-toast";
-import { Link } from "react-router-dom";
-const Header = ({ setIsLoggin, user, setUser }) => {
-    const token = localStorage.getItem('token');
-    const role = localStorage.getItem('role');
+import { Link, useNavigate } from "react-router-dom";
+import authStorage from "../../../utils/authStorage";
+import authService from "../../services/authService";
+import { useContext } from "react";
+import { AuthContext } from "../../context/authContext";
+const Header = () => {
+    const navigate = useNavigate();
+    const { user, setUser, isAuthenticated } = useContext(AuthContext);
+    const token = authStorage.getToken();
     const handleLogout = async () => {
+        let serverLogoutSuccessed = false;
+         const token = authStorage.getToken();
         try {
-            await axios.post('/api/logout', {}, {
-                headers: {
-                    Authorization: `Bearer ${token}`
-                }
-            })
-            localStorage.removeItem('token');
-            localStorage.removeItem('role');
-            setIsLoggin(false);
-            setUser(null);
-            toast.success('Logout အောင်မြင်ပါသည်');
-            window.location.href = '/login';
+            if (token) {
+                await authService.logout(token);
+                serverLogoutSuccessed = true;
+            }
         } catch (err) {
-            console.error(err);
-            localStorage.clear();
-            window.location.href = '/login';
+            console.error("Server logout failed:", err);
+        } finally {
+            authStorage.clearAuth();
+            setUser(null);
+            navigate('/', { replace: true })
+        }
+        if (serverLogoutSuccessed) {
+            toast.success("Logout အောင်မြင်ပါသည်");
+        } else {
+            toast.error("Local မှ Logout လုပ်ပြီးပါပြီ။ Server Token ကို ဖျက်သိမ်းနိုင်ခဲ့ကြောင်း အတည်မပြုနိုင်ပါ။");
         }
     }
     return (
@@ -34,7 +39,7 @@ const Header = ({ setIsLoggin, user, setUser }) => {
                 <div className="collapse navbar-collapse" id="navbarNav">
                     <ul className="navbar-nav ms-auto align-items-center">
 
-                        {token ? (
+                        {isAuthenticated ? (
                             <li className="nav-item dropdown ms-lg-3">
                                 <a className="nav-link dropdown-toggle d-flex align-items-center" href="#" id="profileDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
                                     <img
@@ -55,7 +60,7 @@ const Header = ({ setIsLoggin, user, setUser }) => {
                                             <i className="bi bi-person-circle me-2 text-primary"></i> My Profile
                                         </Link>
                                     </li>
-                                    {(role === 'author' || role === 'admin') && (
+                                    {(user?.role === 'author' || user?.role === 'admin') && (
                                         <li>
                                             <Link className="dropdown-item rounded-2 py-2" to="/admin/dashboard">
                                                 <i className="bi bi-speedometer2 me-2 text-primary"></i> Admin Dashboard

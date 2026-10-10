@@ -1,4 +1,4 @@
-import react, { useEffect, useState } from "react";
+import { useContext } from "react";
 import { BrowserRouter, Route, Routes } from "react-router-dom";
 import Home from "./user/mainPage/home";
 import AdminLayout from "./admin/adminLayout";
@@ -17,39 +17,32 @@ import PostDetail from "./user/mainPage/postDetail";
 import CategoryPage from "./user/mainPage/categoryPage";
 import AdminPost from "./admin/adminPost";
 import NewsletterList from "./admin/adminNewLetter";
+import { AuthContext } from "./context/authContext";
 
 const MainRouter = () => {
-    const [isLoggin, setIsLoggin] = useState(false);
-    const [user, setUser] = useState(null);
-    useEffect(() => {
-        const token = localStorage.getItem('token');
-        const savedUser = localStorage.getItem('user');
-        if (savedUser) {
-            setUser(JSON.parse(savedUser));
-        }
-        if (token) {
-            setIsLoggin(true)
-        } else {
-            setIsLoggin(false)
-        }
-    }, [])
+    const {
+        user,
+        setUser,
+        isAuthenticated,
+        isLoading,
+    } = useContext(AuthContext);
     return (
         <BrowserRouter>
             <Toaster position="top-center" reverseOrder={false} />
             <Routes>
-                <Route path="/" element={<Home setIsLoggin={setIsLoggin} setUser={setUser} user={user} isLoggin={isLoggin} />} />
+                <Route path="/" element={<Home />} />
                 <Route path="/login" element={
                     <GuestRoute>
-                        <Login setUser={setUser} />
+                        <Login />
                     </GuestRoute>
                 } />
                 <Route path="/register" element={
                     <GuestRoute>
-                        <Register setUser={setUser} />
+                        <Register />
                     </GuestRoute>
                 } />
-                <Route path="/profile" element={<Profile user={user} setUser={setUser} />} />
-                <Route path="/techBlog/post/postDetail/:id" element={<PostDetail isLoggin={isLoggin} />} />
+                <Route path="/profile" element={<Profile />} />
+                <Route path="/techBlog/post/postDetail/:id" element={<PostDetail />} />
                 <Route path="/techBlog/category/:slug" element={<CategoryPage />} />
                 {/* Admin */}
                 <Route path="/admin" element={<ProtectedRoute allowedRoles={['admin', 'author']} />}>

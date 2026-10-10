@@ -1,9 +1,10 @@
 import axios from "axios";
 import Comment from "../component/comment";
-import react, { useEffect, useState } from "react";
+import react, { useContext, useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
+import { AuthContext } from "../../context/authContext";
 
-const PostDetail = ({ isLoggin }) => {
+const PostDetail = () => {
     const { id } = useParams();
     const [postDetail, setPostDetail] = useState(null);
     const [loading, setLoading] = useState(false);
@@ -57,7 +58,7 @@ const PostDetail = ({ isLoggin }) => {
                         </div>
                         <hr className="my-5" />
 
-                        <Comment postId={postDetail?.id} isLoggin={isLoggin} />
+                        <Comment postId={postDetail?.id} />
                     </div>
                 )}
             </div>
