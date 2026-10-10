@@ -7,7 +7,7 @@ import Footer from "./footer";
 import { useLocation } from "react-router-dom";
 import axios from "axios";
 
-const Home = ({ setIsLoggin, isLoggin, user, setUser }) => {
+const Home = () => {
     const [posts, setPosts] = useState([]);
     const [meta, setMeta] = useState(null);
     const { search } = useLocation();
@@ -26,12 +26,12 @@ const Home = ({ setIsLoggin, isLoggin, user, setUser }) => {
     }, [search])
     return (
         <main>
-            <Header setIsLoggin={setIsLoggin} user={user} setUser={setUser} />
+            <Header />
             <div className="container my-5">
                 <div className="row">
                     <Hero />
                     <LatestStories posts={posts} meta={meta} fetchSearch={fetchSearch} />
-                    <Sidebar isLoggin={isLoggin} />
+                    <Sidebar />
                 </div>
             </div>
             <Footer />

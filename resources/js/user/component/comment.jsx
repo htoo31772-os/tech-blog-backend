@@ -3,7 +3,8 @@ import { useEffect, useState } from "react";
 import toast from "react-hot-toast";
 import axios from "axios";
 
-const Comment = ({ postId, isLoggin }) => {
+const Comment = ({ postId }) => {
+     const{isAuthenticate}=useContext(AuthContext);
     const [reviews, setReviews] = useState([]);
     const [error, setError] = useState(null);
     const [loading, setLoading] = useState(false);
@@ -29,7 +30,7 @@ const Comment = ({ postId, isLoggin }) => {
     const token = localStorage.getItem('token');
     const handleReviewSubmit = async (e) => {
         e.preventDefault();
-        if (!token) {
+        if (!isAuthenticate) {
             toast.error("မှန်ချက်ရေးရန် login ဝင်ပေးပါ။", { duration: 4000 })
             return;
         }

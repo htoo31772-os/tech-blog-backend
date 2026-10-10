@@ -1,12 +1,16 @@
-import react from "react";
 import { Navigate, Outlet } from "react-router-dom";
+import authStorage from "../../../utils/authStorage";
 const ProtectedRoute = ({ allowedRoles }) => {
-    const token = localStorage.getItem('token');
-    const role = localStorage.getItem('role');
-    if (!token) {
+    const { user, isAuthenticated, isLoading } =
+        useContext(AuthContext);
+    if (isLoading) {
+        return <div>Loading...</div>;
+    }
+
+    if (!isAuthenticated) {
         return <Navigate to='/login' replace />
     }
-    if (allowedRoles && !allowedRoles.includes(role)) {
+    if (allowedRoles && !allowedRoles.includes(user.role)) {
         return <Navigate to='/login' replace />
     }
     return <Outlet />
