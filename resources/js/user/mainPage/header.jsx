@@ -7,14 +7,13 @@ import { AuthContext } from "../../context/authContext";
 const Header = () => {
     const navigate = useNavigate();
     const { user, setUser, isAuthenticated } = useContext(AuthContext);
-    const token = authStorage.getToken();
     const handleLogout = async () => {
-        let serverLogoutSuccessed = false;
+        let serverLogoutSucceeded = false;
          const token = authStorage.getToken();
         try {
             if (token) {
                 await authService.logout(token);
-                serverLogoutSuccessed = true;
+                serverLogoutSucceeded = true;
             }
         } catch (err) {
             console.error("Server logout failed:", err);
@@ -23,7 +22,7 @@ const Header = () => {
             setUser(null);
             navigate('/', { replace: true })
         }
-        if (serverLogoutSuccessed) {
+        if (serverLogoutSucceeded) {
             toast.success("Logout အောင်မြင်ပါသည်");
         } else {
             toast.error("Local မှ Logout လုပ်ပြီးပါပြီ။ Server Token ကို ဖျက်သိမ်းနိုင်ခဲ့ကြောင်း အတည်မပြုနိုင်ပါ။");
@@ -32,7 +31,7 @@ const Header = () => {
     return (
         <nav className="navbar navbar-expand-lg navbar-light sticky-top bg-white border-bottom">
             <div className="container">
-                <a className="navbar-brand fw-bold fs-3" href="/">TECH<span className="text-primary">BLOG</span></a>
+                <Link className="navbar-brand fw-bold fs-3" to="/">TECH<span className="text-primary">BLOG</span></Link>
                 <button className="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
                     <span className="navbar-toggler-icon"></span>
                 </button>
@@ -41,7 +40,7 @@ const Header = () => {
 
                         {isAuthenticated ? (
                             <li className="nav-item dropdown ms-lg-3">
-                                <a className="nav-link dropdown-toggle d-flex align-items-center" href="#" id="profileDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                                <Link className="nav-link dropdown-toggle d-flex align-items-center" id="profileDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
                                     <img
                                         src={user?.avator ? `http://localhost:8000/storage/user/${user.avator}` : "/images/user.jpg"}
                                         className="rounded-circle border shadow-sm"
@@ -49,7 +48,7 @@ const Header = () => {
                                         alt="profile"
                                     />
                                     <span className="ms-2 fw-medium text-dark d-none d-sm-inline">{user?.name}</span>
-                                </a>
+                                </Link>
                                 <ul className="dropdown-menu dropdown-menu-end shadow border-0 mt-3 p-2 rounded-3" aria-labelledby="profileDropdown">
                                     <li className="px-3 py-2 border-bottom mb-2 d-lg-none">
                                         <div className="fw-bold">{user?.name}</div>
