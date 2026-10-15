@@ -6,7 +6,6 @@ use App\Models\Comment;
 use App\Models\Post;
 use App\Models\Newletter;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Validator;
 
 class TechBlogController extends Controller
 {
@@ -39,7 +38,7 @@ class TechBlogController extends Controller
     // New Letter
     public function newLetter(Request $request)
     {
-        $email = auth('sanctum')->check() ? auth('sanctum')->user()->email : $request->email;
+        $email = $request->user()->email;
         if (!$email) {
             return response()->json(['message' => 'Email is required'], 422);
         }

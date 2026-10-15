@@ -1,17 +1,20 @@
-import react, { useContext, useEffect, useState } from "react";
+import { useContext, useState } from "react";
 import toast from "react-hot-toast";
 import axios from "axios";
 import { AuthContext } from "../../context/authContext";
+import authStorage from "../../../utils/authStorage";
 const NewLetter = () => {
-    const{isAuthenticated}=useContext(AuthContext);
+    const { isAuthenticated } = useContext(AuthContext);
     const [email, setEmail] = useState("");
+    const token = authStorage.getToken();
     const handleSubscribe = async (e) => {
         e.preventDefault();
-        if (!isAuthenticated && !email) {
+        if (!isAuthenticated && !email.trim()) {
             toast.error("Email လိပ်စာထည့်ပေးပါ။", { duration: 4000 });
+            return;
         }
         try {
-            const res = await axios.post('/api/newLetter', { email: isAuthenticated ? null : email }, {
+            await axios.post('/api/newLetter', { email: isAuthenticated ? null : email }, {
                 headers: {
                     'Authorization': `Bearer ${token}`
                 }
@@ -31,7 +34,6 @@ const NewLetter = () => {
                 <p className="small opacity-75">Get the latest articles delivered to your inbox.</p>
                 <form onSubmit={handleSubscribe}>
                     {isAuthenticated ? (
-                        // Login ဝင်ထားရင် စာသားပဲပြမယ်
                         <p className="small opacity-75">
                             သင်သည် Login ဝင်ထားသည့်အတွက် ခလုတ်နှိပ်ရုံဖြင့် စာရင်းသွင်းနိုင်ပါသည်။
                         </p>

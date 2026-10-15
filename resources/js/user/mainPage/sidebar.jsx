@@ -1,4 +1,3 @@
-import react from "react";
 import Search from "../component/search";
 import Category from "../component/category";
 import NewLetter from "../component/newLetter";

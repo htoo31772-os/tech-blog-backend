@@ -1,4 +1,4 @@
-import react, { useState } from "react";
+import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 const Search = () => {
     const [keyword, setKeyword] = useState("");
@@ -6,7 +6,7 @@ const Search = () => {
     const handleSearchSubmit = (e) => {
         e.preventDefault();
         if (keyword.trim()) {
-            navigate(`/?search=${keyword}`)
+            navigate(`/?search=${encodeURIComponent(keyword.trim())}`)
         } else {
             navigate('/')
         }

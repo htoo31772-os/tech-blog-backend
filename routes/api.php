@@ -14,7 +14,6 @@ Route::get('/user', function (Request $request) {
 })->middleware('auth:sanctum');
 Route::post('/register', [AuthController::class, 'register'])->name('home.register');
 Route::post('/login', [AuthController::class, 'login'])->name('home.login');
-Route::post('/newLetter', [TechBlogController::class, 'newLetter'])->name('home.newLetter');
 Route::get('/techBlog/post', [TechBlogController::class, 'index'])->name('home.post.index');
 Route::get('/techBlog/post/postDetail/{id}', [TechBlogController::class, 'postDetail'])->name('home.post.postDetail');
 Route::get('/techBlog/post/{postId}/reviews', [TechBlogController::class, 'reviews'])->name('home.post.reviews');
@@ -23,6 +22,7 @@ Route::get('/techBlog/category/{slug}', [CategoryController::class, 'getPostByCa
 
 // User Middleware
 Route::middleware('auth:sanctum')->group(function () {
+    Route::post('/newLetter', [TechBlogController::class, 'newLetter'])->name('home.newLetter');
     Route::post('/user/profile-update', [AuthController::class, 'updateProfile'])->name('home.user.updateProfile');
     Route::post('/user/password-update', [AuthController::class, 'passwordUpdate'])->name('home.user.passwordUpdate');
     Route::post('/logout', [AuthController::class, 'logout'])->name('home.logout');

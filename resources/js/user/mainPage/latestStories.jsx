@@ -1,18 +1,17 @@
-import api from "axios";
-import react, { useState } from "react";
 import { Link } from "react-router-dom";
-const LatestStories = ({ posts, meta, fetchSearch }) => {
-    const [error, setError] = useState(null);
-    const [loading, setLoading] = useState(false);
-
+const LatestStories = ({ posts, meta, fetchSearch, loading, error }) => {
     return (
         <div className="col-lg-8">
             <h3 className="fw-bold mb-4">Latest Stories</h3>
             <div className="row g-4">
                 {loading ? (
                     <div className="text-center mt-5">Loading Articles...</div>
-                ) : !posts || posts?.length > 0 ? (
-                    posts?.map(post => (
+                ) : error ? (
+                    <div className="text-center mt-5 text-danger">
+                        {error}
+                    </div>
+                ) : posts?.length > 0 ? (
+                    posts.map(post => (
                         <div key={post.id} className="col-md-6">
                             <div className="card h-100 shadow-sm border-0 rounded-4 overflow-hidden">
                                 <img
@@ -21,12 +20,12 @@ const LatestStories = ({ posts, meta, fetchSearch }) => {
                                     alt="Post Image"
                                 />
                                 <div className="card-body p-4">
-                                    <span className="text-primary fw-bold small">{post.category.name}</span>
+                                    <span className="text-primary fw-bold small">{post.category.name ?? "Uncategorized"}</span>
                                     <h5 className="card-title fw-bold mt-2">{post.title}</h5>
                                     <p className="card-text text-muted">{post.body.substring(0, 80)}...</p>
                                     <div className="d-flex align-items-center justify-content-between mt-4 pt-3 border-top">
                                         <div className="small">
-                                            <div className="fw-bold">{post.user.name}</div>
+                                            <div className="fw-bold">{post.user.name ?? "Unknown Author"}</div>
                                             <div className="text-muted">{new Date(post.created_at).toLocaleDateString('en-US', {
                                                 month: 'short',
                                                 day: 'numeric',
