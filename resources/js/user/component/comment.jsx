@@ -1,8 +1,8 @@
 import { Link } from "react-router-dom";
-import { useEffect, useState } from "react";
+import { useContext, useEffect, useState } from "react";
 import toast from "react-hot-toast";
 import axios from "axios";
-
+import { AuthContext } from "../../context/authContext";
 const Comment = ({ postId }) => {
      const{isAuthenticate}=useContext(AuthContext);
     const [reviews, setReviews] = useState([]);
@@ -71,7 +71,7 @@ const Comment = ({ postId }) => {
                         onChange={(e) => { setNewReview({ ...newReview, content: e.target.value }) }}
                     ></textarea>
                     <div className="d-flex justify-content-end mt-2">
-                        {isLoggin ? (
+                        {isAuthenticate ? (
                             <button className="btn btn-primary px-4 rounded-pill shadow-sm" disabled={btnLoading}>
                                 {btnLoading ? 'Sending...' : 'Submit Comment'}
                             </button>
