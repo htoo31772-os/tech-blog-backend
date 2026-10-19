@@ -1,8 +1,8 @@
 import axios from "axios";
 import Comment from "../component/comment";
-import react, { useContext, useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
-import { AuthContext } from "../../context/authContext";
+
 
 const PostDetail = () => {
     const { id } = useParams();

@@ -2,7 +2,6 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\Comment;
 use App\Models\Post;
 use App\Models\Newletter;
 use Illuminate\Http\Request;
@@ -23,13 +22,18 @@ class TechBlogController extends Controller
     // Post Detail
     public function postDetail($id)
     {
-        $postDetail = Post::with(['category', 'user'])->where('id', $id)->firstOrFail();
+        $postDetail = Post::with(['category', 'user'])
+            ->where('id', $id)
+            ->where('status', 'public')
+            ->firstOrFail();
+
         return response()->json($postDetail);
     }
     // Get review on his post
     public function reviews($postId)
     {
-        $reviews = Comment::with('user')->where('post_id', $postId)->latest()->get();
+        $post = Post::where('id', $postId)->where('status', 'public')->firstOrFail();
+        $reviews = $post->comments()->with('user')->where('post_id', $postId)->latest()->get();
         $reviews->each(function ($review) {
             $review->time_ago = $review->created_at->diffForHumans();
         });
