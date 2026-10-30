@@ -1,14 +1,10 @@
-import axios from "axios"
+import api from "../api/api";
 const commentServices = {
     getComment(postId) {
-        return axios.get(`/api/techBlog/post/${postId}/reviews`)
+        return api.get(`/api/techBlog/post/${postId}/reviews`)
     },
-    updateComment(postId, token, data) {
-        return axios.post(`/api/techBlog/post/${postId}/newReviews`, data, {
-            headers: {
-                'Authorization': `Bearer ${token}`
-            }
-        })
+    updateComment(postId, data) {
+        return api.post(`/api/techBlog/post/${postId}/newReviews`, data)
     }
 }
 export default commentServices;

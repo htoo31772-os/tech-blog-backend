@@ -26,6 +26,9 @@ const authStorage = {
             return null;
         }
     },
+    updateUser(user) {
+        localStorage.setItem(USER_KEY, JSON.stringify(user));
+    },
     clearAuth() {
         localStorage.removeItem(TOKEN_KEY);
         localStorage.removeItem(ROLE_KEY);

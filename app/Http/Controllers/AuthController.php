@@ -94,21 +94,42 @@ class AuthController extends Controller
         if ($validator->fails()) {
             return $this->validationError($validator);
         }
-        $user->name = $request->name;
-        $user->bio  = $request->bio;
-
-        if ($request->hasFile('image')) {
-            // ပုံဟောင်း ဖျက်တဲ့ logic
-            if ($user->avator) {
-                Storage::disk('public')->delete('user/' . $user->avator);
+        $oldImage = $user->avator;
+        $newImageFile = null;
+        try {
+            $user->name = $request->name;
+            $user->bio  = $request->bio;
+            if ($request->hasFile('image')) {
+                $file = $request->file('image');
+                $fileName = $file->hashName();
+                $newImageFile = $file->storeAs('user', $fileName, 'public');
+                if (!$newImageFile) {
+                    return response()->json([
+                        'message' => 'Image upload failed'
+                    ], 500);
+                }
+                $user->avator = $fileName;
             }
 
-            $fileName = uniqid() . $request->file('image')->getClientOriginalName();
-            $request->file('image')->storeAs('user', $fileName, 'public');
-            $user->avator = $fileName;
-        }
-        $user->save();
+            $user->save();
+        } catch (\Throwable $e) {
+            if ($newImageFile) {
+                Storage::disk('public')->delete($newImageFile);
+            }
+            report($e);
 
+            return response()->json([
+                'message' => 'Profile update failed'
+            ], 500);
+        }
+
+        if ($newImageFile && $oldImage) {
+            try {
+                Storage::disk('public')->delete('user/' . $oldImage);
+            } catch (\Throwable $e) {
+                report($e);
+            }
+        }
         return response()->json([
             'message' => 'Profile updated successfully',
             'user'    => $user
@@ -118,12 +139,22 @@ class AuthController extends Controller
     public function passwordUpdate(Request $request)
     {
         $validator = Validator::make($request->all(), [
-            'password' => 'required|string|min:8|confirmed',
+            'current_password' => 'required|string',
+            'password' => 'required|string|min:8|confirmed|different:current_password',
         ]);
         if ($validator->fails()) {
             return $this->validationError($validator);
         }
         $user = Auth::user();
+        if (!Hash::check($request->current_password, $user->password)) {
+            return response()->json([
+                'status' => 'error',
+                'message' => 'Validation failed',
+                'errors' => [
+                    'current_password' => 'Current password is incorrect',
+                ],
+            ], 422);
+        }
         $user->password = Hash::make($request->password);
         $user->save();
         return response()->json(['message' => 'Password changed successfully']);

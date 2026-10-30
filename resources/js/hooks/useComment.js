@@ -1,7 +1,6 @@
 import { useContext, useEffect, useState } from "react";
 import toast from "react-hot-toast";
 import { AuthContext } from "../context/authContext";
-import authStorage from "../../utils/authStorage";
 import commentServices from "../services/commentService";
 const useComment = ({ postId }) => {
     const { isAuthenticated } = useContext(AuthContext);
@@ -56,10 +55,10 @@ const useComment = ({ postId }) => {
             toast.error("မှန်ချက်ရေးပေးပါ။", { duration: 4000 })
             return;
         }
-        const token = authStorage.getToken();
+
         try {
             setBtnLoading(true);
-            const response = await commentServices.updateComment(postId, token, newReview);
+            const response = await commentServices.updateComment(postId, newReview);
             setReviews(prevReview => ([
                 ...prevReview,
                 response.data
