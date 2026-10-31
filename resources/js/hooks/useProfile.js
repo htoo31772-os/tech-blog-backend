@@ -30,15 +30,40 @@ const useProfile = ({ user, setUser }) => {
 
     const handleImageChange = (e) => {
         const file = e.target.files[0];
-        if (file) {
-            setPreviewImage(URL.createObjectURL(file));
-            setImage(file);
+
+        if (!file) return;
+
+        // Validate Image Type
+        const allowedTypes = ["image/jpeg", "image/png"];
+
+        if (!allowedTypes.includes(file.type)) {
             setError(prev => ({
                 ...prev,
-                image: null
+                image: "Only JPG, JPEG and PNG images are allowed"
             }));
+            e.target.value = "";
+            return;
         }
-    }
+
+        // Validate Image Size (2MB)
+        if (file.size > 2 * 1024 * 1024) {
+            setError(prev => ({
+                ...prev,
+                image: "Image size must not exceed 2MB"
+            }));
+            e.target.value = "";
+            return;
+        }
+
+        // Clear previous image error
+        setError(prev => ({
+            ...prev,
+            image: null
+        }));
+
+        setPreviewImage(URL.createObjectURL(file));
+        setImage(file);
+    };
 
     const handleInputChange = (e) => {
         const { name, value } = e.target;

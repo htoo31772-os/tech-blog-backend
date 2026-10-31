@@ -1,9 +1,10 @@
-import axios from 'axios';
 import { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
+import authStorage from '../../utils/authStorage';
+import api from '../api/api';
 
 const AdminDashboard = () => {
-    const token = localStorage.getItem('token');
+    const token = authStorage.getToken();
     const [recentPosts, setRecentPosts] = useState([]);
     const [stats, setStats] = useState({
         totalPosts: 0,
@@ -17,11 +18,7 @@ const AdminDashboard = () => {
     useEffect(() => {
         const fetchDashboardData = async () => {
             try {
-                const res = await axios.get('/api/admin/dashboard-stats', {
-                    headers: {
-                        'Authorization': `Bearer ${token}`
-                    }
-                })
+                const res = await api.get('/api/admin/dashboard-stats');
                 setStats(res.data.stats);
                 setRecentPosts(res.data.recentPosts);
             } catch (error) {

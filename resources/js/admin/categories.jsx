@@ -1,6 +1,6 @@
-import axios from "axios";
-import React, { useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import toast from "react-hot-toast";
+import api from "../api/api";
 const Categories = () => {
     const token = localStorage.getItem('token');
     // Category List များကို backend မှ ရယူခြင်း
@@ -12,11 +12,7 @@ const Categories = () => {
         const fetchCategory = async () => {
             setIsLoading(true);
             try {
-                const response = await axios.get('/api/admin/category', {
-                    headers: {
-                        'Authorization': `Bearer ${token}`
-                    }
-                });
+                const response = await api.get('/api/admin/category');
                 setCategories(response.data);
             } catch (err) {
                 console.error('error is:', err);
@@ -63,20 +59,12 @@ const Categories = () => {
                 setValidationError({});
                 if (editId) {
                     // Update Category
-                    const response = await axios.post(`/api/admin/category/update/${editId}`, { name, slug }, {
-                        headers: {
-                            'Authorization': `Bearer ${token}`
-                        }
-                    })
+                    const response = await api.post(`/api/admin/category/update/${editId}`, { name, slug })
                     setCategories(categories.map(category => category.id === editId ? response.data.category : category));
                     toast.success('Category ကို ပြင်ဆင်ပြီးပါပြီ။')
                 } else {
                     // Create Category
-                    const response = await axios.post('/api/admin/category/store', { name, slug }, {
-                        headers: {
-                            'Authorization': `Bearer ${token}`
-                        }
-                    })
+                    const response = await api.post('/api/admin/category/store', { name, slug })
                     setCategories([response.data.category, ...categories])
                     toast.success('Category အသစ် ထည့်သွင်းပြီးပါပြီ')
                 }
@@ -99,11 +87,7 @@ const Categories = () => {
     const handleDelete = async (id) => {
         if (window.confirm('Category ကိုဖျက်ရန် သေချာပါသလား?')) {
             try {
-                await axios.post(`/api/admin/category/delete/${id}`, {}, {
-                    headers: {
-                        'Authorization': `Bearer ${token}`
-                    }
-                })
+                await api.post(`/api/admin/category/delete/${id}`)
                 setCategories(categories.filter(category => category.id !== id));
                 toast.success('ဖျက်သိမ်းမှုအောင်မြင်ပါသည်။');
             } catch (err) {

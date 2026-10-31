@@ -58,7 +58,6 @@ const AdminLayout = ({ user }) => {
                     </div>
 
                     <div className="p-4">
-                        {/* ဤနေရာတွင် Dashboard သို့မဟုတ် Users page များ အစားထိုးဝင်ရောက်မည် */}
                         <Outlet />
                     </div>
                 </main>

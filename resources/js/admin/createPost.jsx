@@ -1,8 +1,8 @@
 
-import axios from "axios";
 import { useEffect, useState } from "react";
 import toast from "react-hot-toast";
 import { useNavigate } from "react-router-dom";
+import api from "../api/api";
 const CreatePost = () => {
     const token = localStorage.getItem('token');
     const [validationError, setValidationError] = useState({});
@@ -19,7 +19,7 @@ const CreatePost = () => {
     const navigate = useNavigate();
     useEffect(() => {
         const fetchCategories = async () => {
-            const response = await axios.get(`/api/admin/category`, {
+            const response = await api.get(`/api/admin/category`, {
                 headers: {
                     'Authorization': `Bearer ${token}`
                 }
@@ -59,7 +59,7 @@ const CreatePost = () => {
         }
         if (Object.keys(newErrors).length === 0) {
             try {
-                await axios.post(`/api/admin/post/store`, data, {
+                await api.post(`/api/admin/post/store`, data, {
                     headers: {
                         'Authorization': `Bearer ${token}`
                     }

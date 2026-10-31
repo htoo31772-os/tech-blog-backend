@@ -1,6 +1,6 @@
-import axios from 'axios';
-import React, { useEffect, useState } from 'react';
+import { useEffect, useState } from 'react';
 import toast from 'react-hot-toast';
+import api from '../api/api';
 
 const UserManagement = ({ user: currentUser }) => {
     const token = localStorage.getItem('token');
@@ -15,11 +15,7 @@ const UserManagement = ({ user: currentUser }) => {
     }, []);
     const fetchUsers = async (pageNumber) => {
         try {
-            const res = await axios.get(`/api/admin/users?page=${pageNumber}`, {
-                headers: {
-                    'Authorization': `Bearer ${token}`
-                }
-            })
+            const res = await api.get(`/api/admin/users?page=${pageNumber}`)
             setUsers(res.data.data);
             setMeta(res.data);
         } catch (err) {
@@ -30,11 +26,7 @@ const UserManagement = ({ user: currentUser }) => {
     const handleRoleChange = async (userId, newRole) => {
         if (window.confirm('User ကို role ပြောင်းမှာသေချာလား?')) {
             try {
-                await axios.post(`/api/admin/users/${userId}/role`, { role: newRole }, {
-                    headers: {
-                        'Authorization': `Bearer ${token}`
-                    }
-                })
+                await api.post(`/api/admin/users/${userId}/role`, { role: newRole })
                 fetchUsers(meta.current_page);
                 toast.success('User role ပြောင်းပြီးပါပြီ။', { duration: 4000 });
             } catch (err) {
@@ -50,11 +42,7 @@ const UserManagement = ({ user: currentUser }) => {
         }
         if (window.confirm("User ကို delete လုပ်မှာလား?")) {
             try {
-                await axios.delete(`/api/admin/users/${userId}`, {
-                    headers: {
-                        'Authorization': `Bearer ${token}`
-                    }
-                })
+                await api.delete(`/api/admin/users/${userId}`)
                 fetchUsers(meta.current_page);
                 toast.success("User ကို delete လုပ်ပြီးပါပြီ။", { duration: 4000 });
             } catch (err) {

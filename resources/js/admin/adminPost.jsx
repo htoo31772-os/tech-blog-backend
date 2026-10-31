@@ -2,6 +2,7 @@ import axios from 'axios';
 import React, { useEffect, useState } from 'react';
 import toast from 'react-hot-toast';
 import { Link, Navigate, useNavigate } from 'react-router-dom';
+import api from '../api/api';
 
 const AdminPost = () => {
     const token = localStorage.getItem('token');
@@ -14,11 +15,7 @@ const AdminPost = () => {
     useEffect(() => {
         const fetchPost = async () => {
             try {
-                const response = await axios.get('/api/admin/post', {
-                    headers: {
-                        'Authorization': `Bearer ${token}`
-                    }
-                })
+                const response = await api.get('/api/admin/post')
                 setPosts(response.data);
             } catch (error) {
                 console.error("Fetch error:", error);
@@ -32,11 +29,7 @@ const AdminPost = () => {
     const handleDelete = (id) => {
         if (window.confirm('ဒီpost ကိုဖျက်ရန်သေချာပါသလား?')) {
             try {
-                const response = axios.post(`/api/admin/post/delete/${id}`, {}, {
-                    headers: {
-                        'Authorization': `Bearer ${token}`
-                    }
-                })
+                const response = api.post(`/api/admin/post/delete/${id}`)
                 setPosts(posts.filter(post => post.id !== id));
                 toast.success('Post ကိုဖျက်သိမ်းပြီးပါပြီ။', { duration: 4000 });
             } catch (err) {

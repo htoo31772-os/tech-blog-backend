@@ -1,7 +1,7 @@
-import axios from "axios";
-import react, { useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import toast from "react-hot-toast";
-import { replace, useNavigate, useParams } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
+import api from "../api/api";
 
 const EditPost = () => {
     const { id } = useParams();
@@ -23,14 +23,14 @@ const EditPost = () => {
     useEffect(() => {
         const fetchData = async () => {
             try {
-                const category = await axios.get('/api/admin/category', {
+                const category = await api.get('/api/admin/category', {
                     headers: {
                         'Authorization': `Bearer ${token}`
                     }
                 })
                 setCategories(category.data);
 
-                const editData = await axios.get(`/api/admin/post/edit/${id}`, {
+                const editData = await api.get(`/api/admin/post/edit/${id}`, {
                     headers: {
                         'Authorization': `Bearer ${token}`
                     }
@@ -86,7 +86,7 @@ const EditPost = () => {
         }
         if (Object.keys(newErrors).length === 0) {
             try {
-                await axios.post(`/api/admin/post/update/${id}`, data, {
+                await api.post(`/api/admin/post/update/${id}`, data, {
                     headers: {
                         'Authorization': `Bearer ${token}`
                     }

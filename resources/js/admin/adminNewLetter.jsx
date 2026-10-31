@@ -1,6 +1,6 @@
-import axios from "axios";
-import React, { useState, useEffect } from "react";
+import { useState, useEffect } from "react";
 import { toast } from "react-hot-toast";
+import api from "../api/api";
 
 const NewsletterList = () => {
     const token = localStorage.getItem('token');
@@ -13,7 +13,7 @@ const NewsletterList = () => {
 
     const fetchSubscribers = async () => {
         try {
-            const res = await axios.get("/api/admin/subscribers", {
+            const res = await api.get("/api/admin/subscribers", {
                 headers: { Authorization: `Bearer ${token}` }
             });
             setSubscribers(res.data.data);
@@ -28,9 +28,7 @@ const NewsletterList = () => {
     const handleDelete = async (id) => {
         if (window.confirm("ဒီ Email ကို စာရင်းထဲက ဖျက်မှာ သေချာလား?")) {
             try {
-                await axios.delete(`/api/admin/subscribers/${id}`, {
-                    headers: { Authorization: `Bearer ${token}` }
-                });
+                await api.delete(`/api/admin/subscribers/${id}`);
                 toast.success("ဖျက်ပြီးပါပြီ");
                 fetchSubscribers();
             } catch (err) {
