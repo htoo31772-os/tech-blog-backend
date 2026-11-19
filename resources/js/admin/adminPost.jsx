@@ -1,24 +1,25 @@
-import axios from 'axios';
-import React, { useEffect, useState } from 'react';
+import { useEffect, useState } from 'react';
 import toast from 'react-hot-toast';
-import { Link, Navigate, useNavigate } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import api from '../api/api';
+import authStorage from '../../utils/authStorage';
 
 const AdminPost = () => {
-    const token = localStorage.getItem('token');
-    const role = localStorage.getItem('role');
+    const role = authStorage.getRole();
     const [loading, setLoading] = useState(true);
     const [posts, setPosts] = useState([]);
     const navigate = useNavigate();
-
+    const [error, setError] = useState('')
     // get Data form backend
     useEffect(() => {
         const fetchPost = async () => {
             try {
                 const response = await api.get('/api/admin/post')
                 setPosts(response.data);
-            } catch (error) {
-                console.error("Fetch error:", error);
+                setError('')
+            } catch (err) {
+                console.error("Fetch error:", err);
+                setError(err.response?.data?.message || "တစ်ခုခုမှားယွင်းနေပါသည်။ ထပ်မံကြိုးစားကြည့်ပါ။");
             } finally {
                 setLoading(false)
             }
@@ -26,21 +27,24 @@ const AdminPost = () => {
         fetchPost();
     }, []);
     // Delete post
-    const handleDelete = (id) => {
-        if (window.confirm('ဒီpost ကိုဖျက်ရန်သေချာပါသလား?')) {
-            try {
-                const response = api.post(`/api/admin/post/delete/${id}`)
-                setPosts(posts.filter(post => post.id !== id));
-                toast.success('Post ကိုဖျက်သိမ်းပြီးပါပြီ။', { duration: 4000 });
-            } catch (err) {
-                console.error('Delete error:', err);
-                if (err.response.status === 404) {
-                    toast.error('Post ကိုမတွေ့ပါရှိပါ။', { duration: 4000 })
-                } else {
-                    toast.error('ဖျက်လို့မရပါ။ ထပ်မံကြိုးစားကြည့်ပါ။', { duration: 4000 });
-                }
+    const handleDelete = async (id) => {
+        const confirmed = window.confirm('ဒီpost ကိုဖျက်ရန်သေချာပါသလား?');
+        if (!confirmed) return;
+        try {
+            await api.post(`/api/admin/post/delete/${id}`)
+            setPosts(prev => prev.filter(post => post.id !== id));
+            toast.success('Post ကိုဖျက်သိမ်းပြီးပါပြီ။', { duration: 4000 });
+        } catch (err) {
+            console.error('Delete error:', err);
+            if (err.response?.status === 404) {
+                toast.error('Post ကိုမတွေ့ပါရှိပါ။', { duration: 4000 })
+            } else if (err.response?.status === 403) {
+                toast.error(err.response.data.message, { duration: 4000 });
+            } else {
+                toast.error('ဖျက်လို့မရပါ။ ထပ်မံကြိုးစားကြည့်ပါ။', { duration: 4000 });
             }
         }
+
     }
     return (
         <div className="content-card mb-5 bg-white p-4 shadow-sm rounded">
@@ -62,8 +66,10 @@ const AdminPost = () => {
                     <tbody>
                         {loading ? (
                             <tr><td colSpan="5" className='text-center'>Loading...</td></tr>
+                        ) : error ? (
+                            <tr><td colSpan="5" className='text-center text-danger'>{error}</td></tr>
                         ) : Array.isArray(posts) && posts.length > 0 ? (
-                            posts?.map(post => (
+                            posts.map(post => (
                                 <tr key={post.id}>
                                     <td className="fw-bold">{post.title}</td>
                                     <td><span className="badge bg-success">{post.category.name}</span></td>
@@ -71,7 +77,7 @@ const AdminPost = () => {
                                     <td>{new Date(post.created_at).toLocaleDateString()}</td>
                                     <td>
                                         <button onClick={() => { navigate(`/admin/post/edit/${post.id}`) }} className="btn btn-sm btn-outline-secondary me-1"><i className="bi bi-pencil"></i></button>
-                                        {role === 'admin' && (<button onClick={() => handleDelete(post.id)} className="btn btn-sm btn-outline-danger"><i className="bi bi-trash"></i></button>)}
+                                        <button onClick={() => handleDelete(post.id)} className="btn btn-sm btn-outline-danger"><i className="bi bi-trash"></i></button>
                                     </td>
                                 </tr>
                             ))

@@ -16,7 +16,6 @@ return new class extends Migration
             $table->foreignId('user_id')->constrained()->onDelete('cascade');
             $table->foreignId('category_id')->constrained()->onDelete('cascade');
             $table->string('title');
-            $table->string('slug');
             $table->string('thumbnail')->nullable();
             $table->longText('body');
             $table->enum('status', ['public', 'draft'])->default('draft');
