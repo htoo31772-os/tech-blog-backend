@@ -24,9 +24,11 @@ const AdminLayout = ({ user }) => {
                         </li>
 
                         <li className="px-4"><small className="text-uppercase text-light fw-bold" style={{ fontSize: '10px' }}>Administration</small></li>
-                        <li className="nav-item">
-                            <NavLink className="nav-link text-white" to="/admin/users"><i className="bi bi-people-fill me-2"></i> User</NavLink>
-                        </li>
+                        {user.role === 'admin' &&
+                            <li className="nav-item">
+                                <NavLink className="nav-link text-white" to="/admin/users"><i className="bi bi-people-fill me-2"></i> User</NavLink>
+                            </li>
+                        }
                         <li className="nav-item">
                             <NavLink className="nav-link text-white" to="/admin/categories"><i className="bi bi-folder-symlink-fill me-2"></i> Categories</NavLink>
                         </li>

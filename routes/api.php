@@ -32,9 +32,17 @@ Route::middleware('auth:sanctum')->group(function () {
 Route::middleware('auth:sanctum', 'role:admin,author')->prefix('admin')->group(function () {
     // dashboard
     Route::get('/dashboard-stats', [AdminController::class, 'index'])->name('admin.dashboard.index');
-    Route::get('/users', [AdminController::class, 'userList'])->name('admin.user.userList');
-    Route::post('/users/{id}/role', [AdminController::class, 'role'])->name('admin.user.role');
-    Route::delete('/users/{id}', [AdminController::class, 'destory'])->name('admin.user.destory');
+    // User Management - Admin only
+    Route::middleware('role:admin')->group(function () {
+        Route::get('/users', [AdminController::class, 'userList'])
+            ->name('admin.user.userList');
+
+        Route::post('/users/{id}/role', [AdminController::class, 'role'])
+            ->name('admin.user.role');
+
+        Route::delete('/users/{id}', [AdminController::class, 'destroy'])
+            ->name('admin.user.destroy');
+    });
     // NewLetter
     Route::get('/subscribers', [AdminController::class, 'newLetter'])->name('admin.newLetter');
     Route::delete('/subscribers/{id}', [AdminController::class, 'delete'])->name('admin.newLetter.delete');

@@ -34,12 +34,22 @@ class AdminController extends Controller
     public function role(Request $request, $id)
     {
         $user = User::findOrFail($id);
-        $user->role = $request->role;
+        if ($user->id === $request->user()->id) {
+            return response()->json([
+                'message' => 'You cannot change yourself!'
+            ], 403);
+        }
+
+        $validated = $request->validate([
+            'role' => 'required|in:admin,author,user',
+        ]);
+
+        $user->role = $validated['role'];
         $user->save();
         return response()->json(['message' => 'Role updated successfully']);
     }
     // Destory User
-    public function destory($id)
+    public function destroy($id)
     {
         $currentUserId = Auth::user()->id;
 
